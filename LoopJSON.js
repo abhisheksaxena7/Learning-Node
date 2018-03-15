@@ -37,16 +37,16 @@ for (var i = 0; i < answers.orgs.length; i++) {
     deployJob[i] += '--target ' + answers.orgs[i] + '\n';
     deployJob[i] += ' <<: *nodeConfiguration\n';
     deployJob[i] += ' only:\n';
-    if (answers.orgs[i] != 'UAT' && answers.orgs[i] != 'Production')
+    if (answers.orgs[i] != 'UAT' && answers.orgs[i] != 'Production') {
         deployJob[i] += '    - /^' + answers.orgs[i] + '/\n';
-
-    if (answers.orgs[i] === 'QA')
+    }
+    if (answers.orgs[i] === 'QA') {
         validateJob[i] += '    - /^feature\/.*/\n';
-    else if (answers.orgs[i] === 'SIT' && !answers.orgs.includes('QA'))
+    } else if (answers.orgs[i] === 'SIT' && !answers.orgs.includes('QA')) {
         validateJob[i] += '    - /^feature\/.*/\n';
-    else if (answers.orgs[i] === 'SIT')
+    } else if (answers.orgs[i] === 'SIT') {
         validateJob[i] += '    - /^SIT/\n';
-    else nestedIf: if (answers.orgs[i] === 'UAT') {
+    } else nestedIf: if (answers.orgs[i] === 'UAT') {
         deployJob[i] += '    - master\n';
         if (answers.orgs.includes('SIT')) {
             validateJob[i] += '    - /^SIT/\n';
