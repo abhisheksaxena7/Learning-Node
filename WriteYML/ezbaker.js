@@ -132,26 +132,28 @@ for (var i = 0; i < orgs.length; i++) {
     deployJobJSON[deployKey].script.push("adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP --target " + orgs[i]);
 
     if (orgs[i] != 'UAT' && orgs[i] != 'Production') {
-        deployJobJSON[deployKey].only = "/^" + orgs[i] + "/";
+        deployJobJSON[deployKey].only.push("/^" + orgs[i] + "/");
     }
     if (orgs[i] === 'QA') {
-        validateJobJSON[validationKey].only = "/^feature\/.*/";
+        validateJobJSON[validationKey].only.push("/^feature\/.*/");
     } else if (orgs[i] === 'SIT' && !orgs.includes('QA')) {
-        validateJobJSON[validationKey].only = "/^feature\/.*/";
+        validateJobJSON[validationKey].only.push("/^feature\/.*/");
     } else if (orgs[i] === 'SIT') {
-        validateJobJSON[validationKey].only = "/^QA/";
+        validateJobJSON[validationKey].only.push("/^QA/");
     } else nestedIf: if (orgs[i] === 'UAT') {
-        deployJobJSON[deployKey].only = "master";
+        deployJobJSON[deployKey].only.push("master");
         if (orgs.includes('SIT')) {
-            validateJobJSON[validationKey].only = "/^SIT/";
+            validateJobJSON[validationKey].only.push("/^SIT/");
             break nestedIf;
         }
-        validateJobJSON[validationKey].only = "/^QA/";
+        validateJobJSON[validationKey].only.push("/^QA/");
     } else
     if (orgs[i] === 'Production') {
-        validateJobJSON[validationKey].only = "master";
-        deployJobJSON[deployKey].only = "/^v[0-9.]+$/";
-        deployJobJSON[deployKey].when = "manual";
+        validateJobJSON[validationKey].only.push("master");
+        deployJobJSON[deployKey].only.push("/^v[0-9.]+$/");
+        deployJobJSON[deployKey].when = [
+            "manual"
+        ];
     }
     gitlabConfig[validationKey] = validateJobJSON[validationKey];
     gitlabConfig[deployKey] = deployJobJSON[deployKey];
