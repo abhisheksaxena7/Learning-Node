@@ -1,18 +1,10 @@
 image: 'appirio/dx-salesforce:latest'
 stages:
-  - quality_scan
   - cleanup
+  - quality_scan
   - validate
   - deploy
   - merge_request
-cleanup:
-  stage: cleanup
-  variables:
-    GIT_STRATEGY: clone
-  script:
-    - 'adx ci:shell --script cleanUp.sh --arguments QA master'
-  only:
-    - schedules
 variables:
   SONAR_URL: <%= sonarUrl %>
 sonarqube_scan:
@@ -44,6 +36,14 @@ sonarqube_scan_publish:
   except:
     - tags
     - schedules
+cleanup:
+  stage: cleanup
+  variables:
+    GIT_STRATEGY: clone
+  script:
+    - 'adx ci:shell --script cleanUp.sh --arguments QA master'
+  only:
+    - schedules
 validate_against_QA:
   stage: validate
   script:
@@ -58,7 +58,8 @@ validate_against_QA:
       - node
   except: &ref_1
     - schedules
-  only: /^feature/.*/
+  only:
+    - /^feature/.*/
 deploy_to_QA:
   stage: deploy
   script:
@@ -71,7 +72,8 @@ deploy_to_QA:
       --target QA
   cache: *ref_0
   except: *ref_1
-  only: /^QA/
+  only:
+    - /^QA/
 validate_against_SIT:
   stage: validate
   script:
@@ -82,7 +84,8 @@ validate_against_SIT:
     - 'adx package:deploy --timestamp $TIMESTAMP --target SIT'
   cache: *ref_0
   except: *ref_1
-  only: /^QA/
+  only:
+    - /^QA/
 deploy_to_SIT:
   stage: deploy
   script:
@@ -95,7 +98,8 @@ deploy_to_SIT:
       --target SIT
   cache: *ref_0
   except: *ref_1
-  only: /^SIT/
+  only:
+    - /^SIT/
 validate_against_UAT:
   stage: validate
   script:
@@ -106,7 +110,8 @@ validate_against_UAT:
     - 'adx package:deploy --timestamp $TIMESTAMP --target UAT'
   cache: *ref_0
   except: *ref_1
-  only: /^SIT/
+  only:
+    - /^SIT/
 deploy_to_UAT:
   stage: deploy
   script:
@@ -119,7 +124,8 @@ deploy_to_UAT:
       --target UAT
   cache: *ref_0
   except: *ref_1
-  only: master
+  only:
+    - master
 validate_against_Production:
   stage: validate
   script:
@@ -130,7 +136,8 @@ validate_against_Production:
     - 'adx package:deploy --timestamp $TIMESTAMP --target Production'
   cache: *ref_0
   except: *ref_1
-  only: master
+  only:
+    - master
 deploy_to_Production:
   stage: deploy
   script:
@@ -143,5 +150,6 @@ deploy_to_Production:
       --target Production
   cache: *ref_0
   except: *ref_1
-  only: '/^v[0-9.]+$/'
+  only:
+    - '/^v[0-9.]+$/'
   when: manual

@@ -16,25 +16,6 @@ let gitlabConfig = {
     ]
 };
 
-const cleanUpJob = {
-    "cleanup": {
-        "stage": "cleanup",
-        "variables": {
-            "GIT_STRATEGY": "clone"
-        },
-        "script": [
-            "adx ci:shell --script cleanUp.sh --arguments QA master"
-        ],
-        "only": [
-            "schedules"
-        ]
-    }
-};
-if (<%= cleanUpBranches %>) { //true // <%= cleanUpBranches %>
-    gitlabConfig = Object.assign({}, gitlabConfig, cleanUpJob);
-    gitlabConfig.stages.unshift('cleanup');
-}
-
 const sonarJobs = {
     "variables": {
         "SONAR_URL": "<%= sonarUrl %>"
@@ -69,7 +50,7 @@ const sonarJobs = {
     }
 };
 
-if (<%= enableSonarQube %>) { //true //<%= enableSonarQube %>
+if (true) { //true //<%= enableSonarQube %>
     if (orgs.includes('QA')) {
         sonarJobs.sonarqube_scan_publish.only.push('QA');
     }
@@ -78,6 +59,26 @@ if (<%= enableSonarQube %>) { //true //<%= enableSonarQube %>
     }
     gitlabConfig = Object.assign({}, gitlabConfig, sonarJobs);
     gitlabConfig.stages.unshift('quality_scan');
+}
+
+
+const cleanUpJob = {
+    "cleanup": {
+        "stage": "cleanup",
+        "variables": {
+            "GIT_STRATEGY": "clone"
+        },
+        "script": [
+            "adx ci:shell --script cleanUp.sh --arguments QA master"
+        ],
+        "only": [
+            "schedules"
+        ]
+    }
+};
+if (true) { //true // <%= cleanUpBranches %>
+    gitlabConfig = Object.assign({}, gitlabConfig, cleanUpJob);
+    gitlabConfig.stages.unshift('cleanup');
 }
 
 //Common code for dynamic jobs
@@ -90,9 +91,6 @@ const commonCodeJSON = {
     },
     "except": [
         "schedules"
-    ],
-    "only": [
-
     ]
 };
 
@@ -131,6 +129,10 @@ for (var i = 0; i < orgs.length; i++) {
     validateJobJSON[validationKey].script[4] = "adx package:deploy --timestamp $TIMESTAMP --target " + orgs[i];
     deployJobJSON[deployKey].script.push("adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP --target " + orgs[i]);
 
+    //Initialize only array with blank value
+    deployJobJSON[deployKey].only = [];
+    validateJobJSON[validationKey].only = [];
+
     if (orgs[i] != 'UAT' && orgs[i] != 'Production') {
         deployJobJSON[deployKey].only.push("/^" + orgs[i] + "/");
     }
@@ -151,16 +153,15 @@ for (var i = 0; i < orgs.length; i++) {
     if (orgs[i] === 'Production') {
         validateJobJSON[validationKey].only.push("master");
         deployJobJSON[deployKey].only.push("/^v[0-9.]+$/");
-        deployJobJSON[deployKey].when = [
-            "manual"
-        ];
+        deployJobJSON[deployKey].when = "manual";
     }
     gitlabConfig[validationKey] = validateJobJSON[validationKey];
     gitlabConfig[deployKey] = deployJobJSON[deployKey];
 }
 
 //console.log(JSON.stringify(gitlabConfig, null, 2));
-writeyaml('.gitlab-ci-writeyaml.yml', gitlabConfig, function (err) {
+writeyaml('.gitlab-ci.yml', gitlabConfig, function (err) {
     // do stuff with err 
-    console.log(err);
+    if (err != null)
+        console.log(err);
 });
