@@ -1,5 +1,5 @@
 const writeyaml = require('write-yaml');
-
+//Static jobs
 let gitlabConfig = {
     "image": "appirio/dx-salesforce:latest",
     "stages": [
@@ -75,6 +75,7 @@ var answers = {
     ]
 };
 
+//Common code for dynamic jobs
 const commonCodeJSON = {
     "cache": {
         "key": "$CI_COMMIT_REF_SLUG",
@@ -94,8 +95,11 @@ validateJobJSON = {};
 deployJobJSON = {};
 
 for (var i = 0; i < answers.orgs.length; i++) {
+    validationKey = 'validate_against_' + answers.orgs[i];
+    deployKey = 'deploy_to_' + answers.orgs[i];
+
     //Validation jobs
-    validateJobJSON[`validate_against_${answers.orgs[i]}`] = {
+    validateJobJSON[validationKey] = {
         "stage": "validate",
         "script": [". ./config.sh",
             "adx resources:build",
@@ -103,53 +107,51 @@ for (var i = 0; i < answers.orgs.length; i++) {
             "adx sort:check"
         ],
     };
-    deployJobJSON[`deploy_to_${answers.orgs[i]}`] = {
+    //Deployment jobs
+    deployJobJSON[deployKey] = {
         "stage": "deploy",
         "script": [". ./config.sh",
             "adx resources:build",
             "adx resources:check",
             "adx sort:check"
         ],
-    }
-    //validateJobJSON[`validate_against_${answers.orgs[i]}`] += commonCodeJSON;
-    //deployJobJSON[`deploy_to_${answers.orgs[i]}`] = commonCodeJSON;
-    validateJobJSON[`validate_against_${answers.orgs[i]}`] = {
-        ...validateJobJSON[`validate_against_${answers.orgs[i]}`],
-        ...commonCodeJSON
-    }
-    //validateJobJSON[`validate_against_${answers.orgs[i]}`] = Object.assign({}, validateJobJSON[`validate_against_${answers.orgs[i]}`], commonCodeJSON);
-    deployJobJSON[`deploy_to_${answers.orgs[i]}`] = Object.assign({}, deployJobJSON[`deploy_to_${answers.orgs[i]}`], commonCodeJSON);
-    validateJobJSON[`validate_against_${answers.orgs[i]}`]["script"][4] = "adx package:deploy --timestamp $TIMESTAMP --target " + answers.orgs[i];
-    deployJobJSON[`deploy_to_${answers.orgs[i]}`]["script"].push("adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP --target " + answers.orgs[i]);
+    };
+
+    //Merge objects so that they have common code
+    validateJobJSON[validationKey] = Object.assign({}, validateJobJSON[validationKey], commonCodeJSON);
+    deployJobJSON[deployKey] = Object.assign({}, deployJobJSON[deployKey], commonCodeJSON);
+
+    //Dynamically write out jobs based on which answers.orgs user chose.
+    validateJobJSON[validationKey].script[4] = "adx package:deploy --timestamp $TIMESTAMP --target " + answers.orgs[i];
+    deployJobJSON[deployKey].script.push("adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP --target " + answers.orgs[i]);
 
     if (answers.orgs[i] != 'UAT' && answers.orgs[i] != 'Production') {
-        deployJobJSON[`deploy_to_${answers.orgs[i]}`]["only"] = "/^" + answers.orgs[i] + "/";
+        deployJobJSON[deployKey].only = "/^" + answers.orgs[i] + "/";
     }
     if (answers.orgs[i] === 'QA') {
-        validateJobJSON[`validate_against_${answers.orgs[i]}`]["only"] = "/^feature\/.*/";
+        validateJobJSON[validationKey].only = "/^feature\/.*/";
     } else if (answers.orgs[i] === 'SIT' && !answers.orgs.includes('QA')) {
-        validateJobJSON[`validate_against_${answers.orgs[i]}`]["only"] = "/^feature\/.*/";
+        validateJobJSON[validationKey].only = "/^feature\/.*/";
     } else if (answers.orgs[i] === 'SIT') {
-        validateJobJSON[`validate_against_${answers.orgs[i]}`]["only"] = "/^QA/";
+        validateJobJSON[validationKey].only = "/^QA/";
     } else nestedIf: if (answers.orgs[i] === 'UAT') {
-        deployJobJSON[`deploy_to_${answers.orgs[i]}`]["only"] = "master";
+        deployJobJSON[deployKey].only = "master";
         if (answers.orgs.includes('SIT')) {
-            validateJobJSON[`validate_against_${answers.orgs[i]}`]["only"] = "/^SIT/";
+            validateJobJSON[validationKey].only = "/^SIT/";
             break nestedIf;
         }
-        validateJobJSON[`validate_against_${answers.orgs[i]}`]["only"] = "/^QA/";
+        validateJobJSON[validationKey].only = "/^QA/";
     } else
     if (answers.orgs[i] === 'Production') {
-        validateJobJSON[`validate_against_${answers.orgs[i]}`]["only"] = "master";
-        deployJobJSON[`deploy_to_${answers.orgs[i]}`]["only"] = "/^v[0-9.]+$/";
-        deployJobJSON[`deploy_to_${answers.orgs[i]}`]["when"] = "manual";
+        validateJobJSON[validationKey].only = "master";
+        deployJobJSON[deployKey].only = "/^v[0-9.]+$/";
+        deployJobJSON[deployKey].when = "manual";
     }
-    gitlabConfig[`validate_against_${answers.orgs[i]}`] = validateJobJSON[`validate_against_${answers.orgs[i]}`];
-    gitlabConfig[`deploy_to_${answers.orgs[i]}`] = deployJobJSON[`deploy_to_${answers.orgs[i]}`];
+    gitlabConfig[validationKey] = validateJobJSON[validationKey];
+    gitlabConfig[deployKey] = deployJobJSON[deployKey];
 }
 
-console.log(JSON.stringify(validateJobJSON, null, 2));
-console.log(JSON.stringify(deployJobJSON, null, 2));
+console.log(JSON.stringify(gitlabConfig, null, 2));
 
 writeyaml('.gitlab-ci-writeyaml.yml', gitlabConfig, function (err) {
     // do stuff with err 

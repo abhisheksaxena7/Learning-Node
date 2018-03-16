@@ -50,6 +50,34 @@ sonarqube_scan_publish:
   except:
     - tags
     - schedules
+validate_against_QA:
+  stage: validate
+  script:
+    - . ./config.sh
+    - 'adx resources:build'
+    - 'adx resources:check'
+    - 'adx sort:check'
+    - 'adx package:deploy --timestamp $TIMESTAMP --target QA'
+  cache: &ref_0
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - node
+  except: &ref_1
+    - schedules
+  only: /^feature/.*/
+deploy_to_QA:
+  stage: deploy
+  script:
+    - . ./config.sh
+    - 'adx resources:build'
+    - 'adx resources:check'
+    - 'adx sort:check'
+    - >-
+      adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP
+      --target QA
+  cache: *ref_0
+  except: *ref_1
+  only: /^QA/
 validate_against_SIT:
   stage: validate
   script:
@@ -58,13 +86,9 @@ validate_against_SIT:
     - 'adx resources:check'
     - 'adx sort:check'
     - 'adx package:deploy --timestamp $TIMESTAMP --target SIT'
-  cache: &ref_0
-    key: $CI_COMMIT_REF_SLUG
-    paths:
-      - node
-  except: &ref_1
-    - schedules
-  only: /^feature/.*/
+  cache: *ref_0
+  except: *ref_1
+  only: /^QA/
 deploy_to_SIT:
   stage: deploy
   script:
