@@ -1,3 +1,4 @@
+//Run with -> node ezbaker.js "[QA,SIT,UAT,Production]"
 const writeyaml = require('write-yaml');
 //Static jobs
 let gitlabConfig = {
@@ -66,15 +67,23 @@ let gitlabConfig = {
     }
 };
 
-var answers = {
-    "orgs": [
-        "QA",
-        "SIT",
-        "UAT",
-        "Production"
-    ]
-};
+// var answers = {
+//     "orgs": [
+//         "QA",
+//         "SIT",
+//         "UAT",
+//         "Production"
+//     ]
+// };
 
+//orgs = process.argv.split(',');
+var orgs = process.argv;
+orgs = orgs[2].split(' ');
+orgs = orgs[0].replace('[', '');
+orgs = orgs.replace(']', '');
+orgs = orgs.split(',');
+console.log(orgs);
+console.log(orgs.length);
 //Common code for dynamic jobs
 const commonCodeJSON = {
     "cache": {
@@ -94,9 +103,9 @@ const commonCodeJSON = {
 validateJobJSON = {};
 deployJobJSON = {};
 
-for (var i = 0; i < process.argv.length; i++) {
-    validationKey = 'validate_against_' + process.argv[i];
-    deployKey = 'deploy_to_' + process.argv[i];
+for (var i = 0; i < orgs.length; i++) {
+    validationKey = 'validate_against_' + orgs[i];
+    deployKey = 'deploy_to_' + orgs[i];
 
     //Validation jobs
     validateJobJSON[validationKey] = {
@@ -122,27 +131,27 @@ for (var i = 0; i < process.argv.length; i++) {
     deployJobJSON[deployKey] = Object.assign({}, deployJobJSON[deployKey], commonCodeJSON);
 
     //Dynamically write out jobs based on which orgs user chose.
-    validateJobJSON[validationKey].script[4] = "adx package:deploy --timestamp $TIMESTAMP --target " + process.argv[i];
-    deployJobJSON[deployKey].script.push("adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP --target " + process.argv[i]);
+    validateJobJSON[validationKey].script[4] = "adx package:deploy --timestamp $TIMESTAMP --target " + orgs[i];
+    deployJobJSON[deployKey].script.push("adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP --target " + orgs[i]);
 
-    if (process.argv[i] != 'UAT' && process.argv[i] != 'Production') {
-        deployJobJSON[deployKey].only = "/^" + process.argv[i] + "/";
+    if (orgs[i] != 'UAT' && orgs[i] != 'Production') {
+        deployJobJSON[deployKey].only = "/^" + orgs[i] + "/";
     }
-    if (process.argv[i] === 'QA') {
+    if (orgs[i] === 'QA') {
         validateJobJSON[validationKey].only = "/^feature\/.*/";
-    } else if (process.argv[i] === 'SIT' && !process.argv.includes('QA')) {
+    } else if (orgs[i] === 'SIT' && !orgs.includes('QA')) {
         validateJobJSON[validationKey].only = "/^feature\/.*/";
-    } else if (process.argv[i] === 'SIT') {
+    } else if (orgs[i] === 'SIT') {
         validateJobJSON[validationKey].only = "/^QA/";
-    } else nestedIf: if (process.argv[i] === 'UAT') {
+    } else nestedIf: if (orgs[i] === 'UAT') {
         deployJobJSON[deployKey].only = "master";
-        if (process.argv.includes('SIT')) {
+        if (orgs.includes('SIT')) {
             validateJobJSON[validationKey].only = "/^SIT/";
             break nestedIf;
         }
         validateJobJSON[validationKey].only = "/^QA/";
     } else
-    if (process.argv[i] === 'Production') {
+    if (orgs[i] === 'Production') {
         validateJobJSON[validationKey].only = "master";
         deployJobJSON[deployKey].only = "/^v[0-9.]+$/";
         deployJobJSON[deployKey].when = "manual";
@@ -151,12 +160,8 @@ for (var i = 0; i < process.argv.length; i++) {
     gitlabConfig[deployKey] = deployJobJSON[deployKey];
 }
 
-console.log(JSON.stringify(gitlabConfig, null, 2));
-try {
-    writeyaml('../../.gitlab-ci-writeyaml.yml', gitlabConfig, function (err) {
-        // do stuff with err 
-        console.log(err);
-    });
-} catch (e) {
-    console.log(e);
-}
+//console.log(JSON.stringify(gitlabConfig, null, 2));
+writeyaml('.gitlab-ci-writeyaml.yml', gitlabConfig, function (err) {
+    // do stuff with err 
+    console.log(err);
+});
