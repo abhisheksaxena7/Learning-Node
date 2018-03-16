@@ -1,29 +1,22 @@
-//Run with -> node ezbaker.js "[QA,SIT,UAT,Production]"
 const writeyaml = require('write-yaml');
+
+var orgName = 'QA,SIT,UAT,Production'; //QA,SIT,UAT,Production //<%= orgs %>
+var orgs = orgName.split(','); //[ 'QA', 'SIT', 'UAT', 'Production' ]
+
+console.log(orgs);
+console.log(orgs.length);
+
 //Static jobs
 let gitlabConfig = {
     "image": "appirio/dx-salesforce:latest",
     "stages": [
-        "cleanup",
-        "quality_scan",
         "validate",
         "deploy",
         "merge_request"
-    ],
-    "variables": {
-        "SONAR_URL": "https://sonar.appirio.com"
-    },
-    ".cacheNodefiles": {
-        "cache": {
-            "key": "$CI_COMMIT_REF_SLUG",
-            "paths": [
-                "node"
-            ]
-        },
-        "except": [
-            "schedules"
-        ]
-    },
+    ]
+};
+
+const cleanUpJob = {
     "cleanup": {
         "stage": "cleanup",
         "variables": {
@@ -35,6 +28,16 @@ let gitlabConfig = {
         "only": [
             "schedules"
         ]
+    }
+};
+if (<%= cleanUpBranches %>) { //true // <%= cleanUpBranches %>
+    gitlabConfig = Object.assign({}, gitlabConfig, cleanUpJob);
+    gitlabConfig.stages.unshift('cleanup');
+}
+
+const sonarJobs = {
+    "variables": {
+        "SONAR_URL": "<%= sonarUrl %>"
     },
     "sonarqube_scan": {
         "stage": "quality_scan",
@@ -57,8 +60,7 @@ let gitlabConfig = {
             "sonar-scanner -Dsonar.sources=. -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.projectVersion=$CI_COMMIT_TAG -Dsonar.analysis.mode=publish"
         ],
         "only": [
-            "master",
-            "QA"
+            "master"
         ],
         "except": [
             "tags",
@@ -67,23 +69,17 @@ let gitlabConfig = {
     }
 };
 
-// var answers = {
-//     "orgs": [
-//         "QA",
-//         "SIT",
-//         "UAT",
-//         "Production"
-//     ]
-// };
+if (<%= enableSonarQube %>) { //true //<%= enableSonarQube %>
+    if (orgs.includes('QA')) {
+        sonarJobs.sonarqube_scan_publish.only.push('QA');
+    }
+    if (orgs.includes('SIT')) {
+        sonarJobs.sonarqube_scan_publish.only.push('SIT');
+    }
+    gitlabConfig = Object.assign({}, gitlabConfig, sonarJobs);
+    gitlabConfig.stages.unshift('quality_scan');
+}
 
-//orgs = process.argv.split(',');
-var orgs = process.argv;
-orgs = orgs[2].split(' ');
-orgs = orgs[0].replace('[', '');
-orgs = orgs.replace(']', '');
-orgs = orgs.split(',');
-console.log(orgs);
-console.log(orgs.length);
 //Common code for dynamic jobs
 const commonCodeJSON = {
     "cache": {
@@ -99,6 +95,7 @@ const commonCodeJSON = {
 
     ]
 };
+
 
 validateJobJSON = {};
 deployJobJSON = {};

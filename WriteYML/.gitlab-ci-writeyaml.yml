@@ -1,19 +1,10 @@
 image: 'appirio/dx-salesforce:latest'
 stages:
-  - cleanup
   - quality_scan
+  - cleanup
   - validate
   - deploy
   - merge_request
-variables:
-  SONAR_URL: 'https://sonar.appirio.com'
-.cacheNodefiles:
-  cache:
-    key: $CI_COMMIT_REF_SLUG
-    paths:
-      - node
-  except:
-    - schedules
 cleanup:
   stage: cleanup
   variables:
@@ -22,6 +13,8 @@ cleanup:
     - 'adx ci:shell --script cleanUp.sh --arguments QA master'
   only:
     - schedules
+variables:
+  SONAR_URL: <%= sonarUrl %>
 sonarqube_scan:
   stage: quality_scan
   script:
@@ -47,6 +40,7 @@ sonarqube_scan_publish:
   only:
     - master
     - QA
+    - SIT
   except:
     - tags
     - schedules
