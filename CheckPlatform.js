@@ -1,0 +1,1 @@
+console.log(/^win/.test(process.platform) ? "Windows" : "Mac");
