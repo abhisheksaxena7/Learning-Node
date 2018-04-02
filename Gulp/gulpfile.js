@@ -1,5 +1,5 @@
 const gulp = require('gulp');
-
+const imagemin = require('gulp-imagemin');
 /*
     TOP-LEVEL FUNCTIONS
     gulp.task - Define tasks
@@ -16,5 +16,13 @@ gulp.task('copyHTML', () => {
     gulp.src('src/*.html')
         .pipe(gulp.dest('dist'));
 });
+
+//Minify the Images
+gulp.task('imageMin', () =>
+    gulp.src('src/images/*')
+    .pipe(imagemin())
+    .pipe(gulp.dest('dist/images'))
+);
+
 //Default task
 gulp.task('default', () => console.log('Gulp is running!'));
