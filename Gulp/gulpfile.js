@@ -44,3 +44,11 @@ gulp.task('sass', () =>
 //Default task
 //gulp.task('default', () => console.log('Gulp is running!'));
 gulp.task('default', ['message', 'copyHTML', 'imageMin', 'minifyjs', 'sass']);
+
+//Watch
+gulp.task('watch', () => {
+    gulp.watch('src/js/*.js', ['minifyjs']);
+    gulp.watch('src/images/*', ['imageMin']);
+    gulp.watch('src/sass/*.scss', ['sass']);
+    gulp.watch('src/*.html', ['copyHTML']);
+});
