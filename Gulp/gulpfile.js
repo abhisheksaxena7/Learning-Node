@@ -42,4 +42,5 @@ gulp.task('sass', () =>
 );
 
 //Default task
-gulp.task('default', () => console.log('Gulp is running!'));
+//gulp.task('default', () => console.log('Gulp is running!'));
+gulp.task('default', ['message', 'copyHTML', 'imageMin', 'minifyjs', 'sass']);
