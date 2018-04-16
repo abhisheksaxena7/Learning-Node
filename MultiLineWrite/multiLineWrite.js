@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const cwd = path.resolve(process.cwd());
 const pathToEnvFile = path.join(cwd, `.env`);
+const sandboxURL = 'https://test.salesforce.com';
+const prodURL = 'https://login.salesforce.com';
 
 function createEnvFile(secrets) {
     let contents = Object.keys(secrets)
@@ -51,6 +53,23 @@ inquirer.prompt([{
         "message": "Please enter the password and security token for the QA org",
     }
 ]).then(answers => {
+    answers = {
+        ...(answers),
+        SF_DEPLOY__ENABLED: 'true',
+        SF_DEPLOY__TEST_SUITES: '',
+        ...(answers.SF_ORG__QA__USERNAME) && {
+            SF_ORG__QA__SERVERURL: sandboxURL
+        },
+        ...(answers.SF_ORG__SIT__USERNAME) && {
+            SF_ORG__SIT__SERVERURL: sandboxURL
+        },
+        ...(answers.SF_ORG__UAT__USERNAME) && {
+            SF_ORG__UAT__SERVERURL: sandboxURL
+        },
+        ...(answers.SF_ORG__PROD__USERNAME) && {
+            SF_ORG__PROD__SERVERURL: prodURL
+        }
+    };
     console.log(JSON.stringify(answers, null, '  '));
     //answers.SF_ORG__KEY = formatValue(answers.SF_ORG__KEY);
     createEnvFile(answers);
