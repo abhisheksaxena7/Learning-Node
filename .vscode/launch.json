@@ -9,6 +9,12 @@
             "request": "launch",
             "name": "check:reduce",
             "program": "${workspaceFolder}/reduce.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "write:secrets",
+            "localRoot": "${workspaceFolder}/MultiLineWrite"
         }
     ]
 }
