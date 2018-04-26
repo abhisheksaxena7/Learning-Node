@@ -126,7 +126,7 @@ for (var i = 0; i < orgs.length; i++) {
     deployJobJSON[deployKey] = Object.assign({}, deployJobJSON[deployKey], commonCodeJSON);
 
     //Dynamically write out jobs based on which orgs user chose.
-    validateJobJSON[validationKey].script[4] = "adx package:deploy --timestamp $TIMESTAMP --target " + orgs[i];
+    validateJobJSON[validationKey].script.push("adx package:deploy --timestamp $TIMESTAMP --target " + orgs[i]);
     deployJobJSON[deployKey].script.push("adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP --target " + orgs[i]);
 
     //Initialize only array with blank value
