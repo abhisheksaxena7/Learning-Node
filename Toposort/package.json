@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "topo-sort": "^1.0.0",
     "toposort": "^2.0.2"
   }
 }
