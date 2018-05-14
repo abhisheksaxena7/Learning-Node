@@ -7,6 +7,23 @@ var orgs = orgName.split(','); //[ 'QA', 'SIT', 'UAT', 'PROD' ]
 console.log(orgs);
 console.log(orgs.length);
 
+let errorInOrder =
+    `Valid choices are:
+        1) QA, SIT, UAT, PROD
+        2) SIT, UAT, PROD
+        3) QA, UAT, PROD
+        4) UAT, PROD
+        5) PROD `;
+if (orgs.length < 1) {
+    console.log('You must choose at least one org.');
+}
+if (!orgs.includes('PROD') && orgs.length) {
+    console.log(errorInOrder);
+}
+if (!orgs.includes('UAT') && orgs.length > 1) {
+    console.log(errorInOrder);
+}
+
 //Static jobs
 let gitlabConfig = {
     "image": "appirio/dx-salesforce:latest",

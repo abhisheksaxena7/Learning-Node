@@ -88,26 +88,6 @@ deploy_to_SIT:
   except: *ref_1
   only:
     - /^SIT/
-validate_against_UAT:
-  stage: validate
-  script:
-    - . ./config.sh
-    - 'adx sort:check'
-    - 'adx package:deploy --target UAT'
-  cache: *ref_0
-  except: *ref_1
-  only:
-    - /^SIT/
-deploy_to_UAT:
-  stage: deploy
-  script:
-    - . ./config.sh
-    - 'adx sort:check'
-    - 'adx package:deploy --deploy.checkOnly false --target UAT'
-  cache: *ref_0
-  except: *ref_1
-  only:
-    - master
 validate_against_PROD:
   stage: validate
   script:
