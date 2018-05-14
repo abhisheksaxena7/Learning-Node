@@ -2,8 +2,8 @@ image: 'appirio/dx-salesforce:latest'
 stages:
   - cleanup
   - quality_scan
-  - validate
   - deploy
+  - validate
   - merge_request
 variables:
   SONAR_URL: <%= sonarUrl %>
@@ -41,17 +41,15 @@ cleanup:
   variables:
     GIT_STRATEGY: clone
   script:
-    - 'adx ci:shell --script cleanUp.sh --arguments QA master'
+    - 'adx ci:shell --script cleanUp.sh --arguments master'
   only:
     - schedules
 validate_against_QA:
   stage: validate
   script:
     - . ./config.sh
-    - 'adx resources:build'
-    - 'adx resources:check'
     - 'adx sort:check'
-    - 'adx package:deploy --timestamp $TIMESTAMP --target QA'
+    - 'adx package:deploy --target QA'
   cache: &ref_0
     key: $CI_COMMIT_REF_SLUG
     paths:
@@ -64,12 +62,8 @@ deploy_to_QA:
   stage: deploy
   script:
     - . ./config.sh
-    - 'adx resources:build'
-    - 'adx resources:check'
     - 'adx sort:check'
-    - >-
-      adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP
-      --target QA
+    - 'adx package:deploy --deploy.checkOnly false --target QA'
   cache: *ref_0
   except: *ref_1
   only:
@@ -78,10 +72,8 @@ validate_against_SIT:
   stage: validate
   script:
     - . ./config.sh
-    - 'adx resources:build'
-    - 'adx resources:check'
     - 'adx sort:check'
-    - 'adx package:deploy --timestamp $TIMESTAMP --target SIT'
+    - 'adx package:deploy --target SIT'
   cache: *ref_0
   except: *ref_1
   only:
@@ -90,12 +82,8 @@ deploy_to_SIT:
   stage: deploy
   script:
     - . ./config.sh
-    - 'adx resources:build'
-    - 'adx resources:check'
     - 'adx sort:check'
-    - >-
-      adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP
-      --target SIT
+    - 'adx package:deploy --deploy.checkOnly false --target SIT'
   cache: *ref_0
   except: *ref_1
   only:
@@ -104,10 +92,8 @@ validate_against_UAT:
   stage: validate
   script:
     - . ./config.sh
-    - 'adx resources:build'
-    - 'adx resources:check'
     - 'adx sort:check'
-    - 'adx package:deploy --timestamp $TIMESTAMP --target UAT'
+    - 'adx package:deploy --target UAT'
   cache: *ref_0
   except: *ref_1
   only:
@@ -116,38 +102,28 @@ deploy_to_UAT:
   stage: deploy
   script:
     - . ./config.sh
-    - 'adx resources:build'
-    - 'adx resources:check'
     - 'adx sort:check'
-    - >-
-      adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP
-      --target UAT
+    - 'adx package:deploy --deploy.checkOnly false --target UAT'
   cache: *ref_0
   except: *ref_1
   only:
     - master
-validate_against_Production:
+validate_against_PROD:
   stage: validate
   script:
     - . ./config.sh
-    - 'adx resources:build'
-    - 'adx resources:check'
     - 'adx sort:check'
-    - 'adx package:deploy --timestamp $TIMESTAMP --target Production'
+    - 'adx package:deploy --target PROD'
   cache: *ref_0
   except: *ref_1
   only:
     - master
-deploy_to_Production:
+deploy_to_PROD:
   stage: deploy
   script:
     - . ./config.sh
-    - 'adx resources:build'
-    - 'adx resources:check'
     - 'adx sort:check'
-    - >-
-      adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP
-      --target Production
+    - 'adx package:deploy --deploy.checkOnly false --target PROD'
   cache: *ref_0
   except: *ref_1
   only:

@@ -1,7 +1,8 @@
+const fs = require('fs');
+const os = require('os');
 const writeyaml = require('write-yaml');
-
-var orgName = 'QA,SIT,UAT,Production'; //QA,SIT,UAT,Production //<%= orgs %>
-var orgs = orgName.split(','); //[ 'QA', 'SIT', 'UAT', 'Production' ]
+var orgName = 'QA,SIT,UAT,PROD'; //QA,SIT,UAT,PROD //<%= orgs %>
+var orgs = orgName.split(','); //[ 'QA', 'SIT', 'UAT', 'PROD' ]
 
 console.log(orgs);
 console.log(orgs.length);
@@ -10,47 +11,47 @@ console.log(orgs.length);
 let gitlabConfig = {
     "image": "appirio/dx-salesforce:latest",
     "stages": [
-        "validate",
         "deploy",
+        "validate",
         "merge_request"
     ]
 };
 
-const sonarJobs = {
-    "variables": {
-        "SONAR_URL": "<%= sonarUrl %>"
-    },
-    "sonarqube_scan": {
-        "stage": "quality_scan",
-        "script": [
-            "adx sonar:config",
-            "sonar-scanner -Dsonar.sources=. -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.gitlab.project_id=$CI_PROJECT_ID -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.analysis.mode=preview"
-        ],
-        "only": [
-            "/^feature\\/.*/"
-        ],
-        "except": [
-            "tags",
-            "schedules"
-        ]
-    },
-    "sonarqube_scan_publish": {
-        "stage": "quality_scan",
-        "script": [
-            "adx sonar:config",
-            "sonar-scanner -Dsonar.sources=. -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.projectVersion=$CI_COMMIT_TAG -Dsonar.analysis.mode=publish"
-        ],
-        "only": [
-            "master"
-        ],
-        "except": [
-            "tags",
-            "schedules"
-        ]
-    }
-};
-
 if (true) { //true //<%= enableSonarQube %>
+    const sonarJobs = {
+        "variables": {
+            "SONAR_URL": "<%= sonarUrl %>"
+        },
+        "sonarqube_scan": {
+            "stage": "quality_scan",
+            "script": [
+                "adx sonar:config",
+                "sonar-scanner -Dsonar.sources=. -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.gitlab.project_id=$CI_PROJECT_ID -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.analysis.mode=preview"
+            ],
+            "only": [
+                "/^feature\\/.*/"
+            ],
+            "except": [
+                "tags",
+                "schedules"
+            ]
+        },
+        "sonarqube_scan_publish": {
+            "stage": "quality_scan",
+            "script": [
+                "adx sonar:config",
+                "sonar-scanner -Dsonar.sources=. -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.projectVersion=$CI_COMMIT_TAG -Dsonar.analysis.mode=publish"
+            ],
+            "only": [
+                "master"
+            ],
+            "except": [
+                "tags",
+                "schedules"
+            ]
+        }
+    };
+
     if (orgs.includes('QA')) {
         sonarJobs.sonarqube_scan_publish.only.push('QA');
     }
@@ -61,22 +62,22 @@ if (true) { //true //<%= enableSonarQube %>
     gitlabConfig.stages.unshift('quality_scan');
 }
 
-
-const cleanUpJob = {
-    "cleanup": {
-        "stage": "cleanup",
-        "variables": {
-            "GIT_STRATEGY": "clone"
-        },
-        "script": [
-            "adx ci:shell --script cleanUp.sh --arguments QA master"
-        ],
-        "only": [
-            "schedules"
-        ]
-    }
-};
 if (true) { //true // <%= cleanUpBranches %>
+    const cleanUpJob = {
+        "cleanup": {
+            "stage": "cleanup",
+            "variables": {
+                "GIT_STRATEGY": "clone"
+            },
+            "script": [
+                "adx ci:shell --script cleanUp.sh --arguments master"
+            ],
+            "only": [
+                "schedules"
+            ]
+        }
+    };
+
     gitlabConfig = Object.assign({}, gitlabConfig, cleanUpJob);
     gitlabConfig.stages.unshift('cleanup');
 }
@@ -94,7 +95,6 @@ const commonCodeJSON = {
     ]
 };
 
-
 validateJobJSON = {};
 deployJobJSON = {};
 
@@ -106,8 +106,6 @@ for (var i = 0; i < orgs.length; i++) {
     validateJobJSON[validationKey] = {
         "stage": "validate",
         "script": [". ./config.sh",
-            "adx resources:build",
-            "adx resources:check",
             "adx sort:check"
         ],
     };
@@ -115,8 +113,6 @@ for (var i = 0; i < orgs.length; i++) {
     deployJobJSON[deployKey] = {
         "stage": "deploy",
         "script": [". ./config.sh",
-            "adx resources:build",
-            "adx resources:check",
             "adx sort:check"
         ],
     };
@@ -126,42 +122,69 @@ for (var i = 0; i < orgs.length; i++) {
     deployJobJSON[deployKey] = Object.assign({}, deployJobJSON[deployKey], commonCodeJSON);
 
     //Dynamically write out jobs based on which orgs user chose.
-    validateJobJSON[validationKey].script.push("adx package:deploy --timestamp $TIMESTAMP --target " + orgs[i]);
-    deployJobJSON[deployKey].script.push("adx package:deploy --deploy.checkOnly false --timestamp $TIMESTAMP --target " + orgs[i]);
+    validateJobJSON[validationKey].script.push("adx package:deploy --target " + orgs[i]);
+    deployJobJSON[deployKey].script.push("adx package:deploy --deploy.checkOnly false --target " + orgs[i]);
 
     //Initialize only array with blank value
     deployJobJSON[deployKey].only = [];
     validateJobJSON[validationKey].only = [];
 
-    if (orgs[i] != 'UAT' && orgs[i] != 'Production') {
+    if (orgs[i] != 'UAT' && orgs[i] != 'PROD') {
         deployJobJSON[deployKey].only.push("/^" + orgs[i] + "/");
     }
+
     if (orgs[i] === 'QA') {
         validateJobJSON[validationKey].only.push("/^feature\/.*/");
-    } else if (orgs[i] === 'SIT' && !orgs.includes('QA')) {
-        validateJobJSON[validationKey].only.push("/^feature\/.*/");
-    } else if (orgs[i] === 'SIT') {
-        validateJobJSON[validationKey].only.push("/^QA/");
-    } else nestedIf: if (orgs[i] === 'UAT') {
-        deployJobJSON[deployKey].only.push("master");
+    }
+
+    if (orgs[i] === 'SIT') {
+        if (!orgs.includes('QA'))
+            validateJobJSON[validationKey].only.push("/^feature\/.*/");
+        else
+            validateJobJSON[validationKey].only.push("/^QA/");
+    }
+
+    if (orgs[i] === 'UAT') {
         if (orgs.includes('SIT')) {
             validateJobJSON[validationKey].only.push("/^SIT/");
-            break nestedIf;
-        }
-        validateJobJSON[validationKey].only.push("/^QA/");
-    } else
-    if (orgs[i] === 'Production') {
-        validateJobJSON[validationKey].only.push("master");
+        } else if (orgs.includes('QA')) {
+            validateJobJSON[validationKey].only.push("/^QA/");
+        } else
+            validateJobJSON[validationKey].only.push("/^feature\/.*/");
+        deployJobJSON[deployKey].only.push("master");
+    }
+
+    if (orgs[i] === 'PROD') {
+        if (orgs.includes('QA') || orgs.includes('SIT') || orgs.includes('UAT'))
+            validateJobJSON[validationKey].only.push("master");
+        else
+            validateJobJSON[validationKey].only.push("/^feature\/.*/");
         deployJobJSON[deployKey].only.push("/^v[0-9.]+$/");
         deployJobJSON[deployKey].when = "manual";
     }
+
     gitlabConfig[validationKey] = validateJobJSON[validationKey];
     gitlabConfig[deployKey] = deployJobJSON[deployKey];
 }
 
 //console.log(JSON.stringify(gitlabConfig, null, 2));
-writeyaml('.gitlab-ci.yml', gitlabConfig, function (err) {
-    // do stuff with err 
-    if (err != null)
-        console.log(err);
-});
+const writeGitLabCiYaml = () => {
+    const gitlabYMLFile = '.gitlab-ci.yml';
+    const convertLineFeed = (src) => {
+        return src.toString().split('\n').join(os.EOL);
+    }
+
+    writeyaml(gitlabYMLFile, gitlabConfig, function (err) {
+        // do stuff with err
+        if (err != null) {
+            console.log(err);
+        } else {
+            if (os.EOL !== '\n') {
+                const newYAML = convertLineFeed(fs.readFileSync(gitlabYMLFile));
+                fs.writeFileSync(gitlabYMLFile, newYAML, 'utf8');
+            }
+        }
+    });
+};
+
+writeGitLabCiYaml();
