@@ -5,6 +5,9 @@ module.exports = {
         "indent": ["error", 4],
         "padded-blocks": ["error", {
             "classes": "always"
+        }],
+        "no-plusplus": ["error", {
+            "allowForLoopAfterthoughts": true
         }]
     }
 };
