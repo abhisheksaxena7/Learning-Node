@@ -1,0 +1,24 @@
+{
+  "name": "learning-node",
+  "version": "1.0.0",
+  "description": "A repo for learning Node and JS",
+  "main": "CheckPlatform.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abhisheksaxena7/Learning-Node.git"
+  },
+  "author": "Abhishek Saxena",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abhisheksaxena7/Learning-Node/issues"
+  },
+  "homepage": "https://github.com/abhisheksaxena7/Learning-Node#readme",
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.12.0"
+  }
+}
