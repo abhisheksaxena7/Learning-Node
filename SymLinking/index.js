@@ -12,7 +12,7 @@ const npmLink = (arrayNode) => {
             cwd: node,
         });
     });
-}
+};
 
 const updateRepos = (arrayNode) => {
     arrayNode.forEach((node) => {
@@ -27,7 +27,7 @@ const updateRepos = (arrayNode) => {
             cwd: node,
         });
     });
-}
+};
 
 const deleteExistingDirs = (arrayNode) => {
     arrayNode.forEach((node) => {

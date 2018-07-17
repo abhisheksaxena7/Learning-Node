@@ -1,5 +1,5 @@
 // Sample command run:
-// gulp update:symlink 
+// gulp update:symlink
 // -d /Users/appirio-13524/Documents/work-repos/node-dx/
 // -a /Users/appirio-13524/Documents/work-repos/node-appirio/
 // -s /Users/appirio-13524/Documents/work-repos/node-salesforce
