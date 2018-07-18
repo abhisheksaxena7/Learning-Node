@@ -29,3 +29,16 @@ gulp.task('update:symlink', () => {
 });
 
 gulp.task('create:symlink', ['symlink', 'update:symlink']);
+
+// A task to update to Node-dx dependencies when
+// a new version has been published for node-salesforce
+// or node-appirio
+gulp.task('publish:dx', () => {
+    index.unlinkDX(nodeDx);
+    index.deleteExistingDirs([nodeDx]);
+    index.installNodeModules([nodeDx]);
+    index.commitUpdatedDependency(nodeDx);
+    index.patchDX(nodeDx);
+});
+
+gulp.task('sync', ['publish:dx', 'create:symlink']);

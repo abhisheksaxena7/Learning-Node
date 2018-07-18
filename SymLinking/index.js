@@ -66,10 +66,43 @@ const linkNodes = (nodeSalesforce, nodeDx) => {
     });
 };
 
+const unlinkDX = nodeDx => spawnSync('npm', ['unlink'], {
+    shell: true,
+    stdio: 'inherit',
+    cwd: nodeDx,
+});
+
+const commitUpdatedDependency = (nodeDx) => {
+    spawnSync('git', ['add', '.'], {
+        shell: true,
+        stdio: 'inherit',
+        cwd: nodeDx,
+    });
+    spawnSync('git', ['commit', '-m', '"Updated Dependencies"'], {
+        shell: true,
+        stdio: 'inherit',
+        cwd: nodeDx,
+    });
+    spawnSync('git', ['push', 'origin', 'master'], {
+        shell: true,
+        stdio: 'inherit',
+        cwd: nodeDx,
+    });
+};
+
+const patchDX = nodeDx => spawnSync('npm', ['version', 'patch'], {
+    shell: true,
+    stdio: 'inherit',
+    cwd: nodeDx,
+});
+
 module.exports = {
     npmLink,
     updateRepos,
     deleteExistingDirs,
     installNodeModules,
     linkNodes,
+    unlinkDX,
+    patchDX,
+    commitUpdatedDependency,
 };
