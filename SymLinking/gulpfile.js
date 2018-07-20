@@ -42,3 +42,8 @@ gulp.task('publish:dx', () => {
 });
 
 gulp.task('sync', ['publish:dx', 'create:symlink']);
+
+gulp.task('refresh:packages', () => {
+    index.deleteExistingDirs([nodeDx]);
+    index.installNodeModules([nodeDx]);
+});
