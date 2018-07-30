@@ -13,6 +13,7 @@ const index = require('./index');
 const nodeDx = argv.d;
 const nodeAppirio = argv.a;
 const nodeSalesforce = argv.s;
+const nodePackage = argv.p;
 const arrayNode = [nodeDx, nodeAppirio, nodeSalesforce];
 
 gulp.task('symlink', () => {
@@ -43,7 +44,9 @@ gulp.task('publish:dx', () => {
 
 gulp.task('sync', ['publish:dx', 'create:symlink']);
 
-gulp.task('refresh:packages', () => {
-    index.deleteExistingDirs([nodeDx]);
-    index.installNodeModules([nodeDx]);
+gulp.task('refresh:package', () => {
+    index.unlinkDX(nodePackage);
+    index.deleteExistingDirs([nodePackage]);
+    index.installNodeModules([nodePackage]);
+    index.updateNodeModules(nodePackage);
 });

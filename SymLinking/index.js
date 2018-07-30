@@ -72,6 +72,12 @@ const unlinkDX = nodeDx => spawnSync('npm', ['unlink'], {
     cwd: nodeDx,
 });
 
+const updateNodeModules = nodeDx => spawnSync('npm', ['update'], {
+    shell: true,
+    stdio: 'inherit',
+    cwd: nodeDx,
+});
+
 const commitUpdatedDependency = (nodeDx) => {
     spawnSync('git', ['add', '.'], {
         shell: true,
@@ -105,4 +111,5 @@ module.exports = {
     unlinkDX,
     patchDX,
     commitUpdatedDependency,
+    updateNodeModules,
 };
