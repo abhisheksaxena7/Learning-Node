@@ -12,6 +12,12 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "salesforceDemo",
+            "program": "${workspaceFolder}/Spawn/salesforceDemo.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "check:reduce",
             "program": "${workspaceFolder}/reduce.js"
         },
