@@ -19,7 +19,7 @@
             "type": "node",
             "request": "launch",
             "name": "check:reduce",
-            "program": "${workspaceFolder}/reduce.js"
+            "program": "${workspaceFolder}/Arrays/reduce.js"
         },
         {
             "type": "node",
