@@ -8,21 +8,22 @@ const {
 // console.log(r.stdout.toString());
 // console.log(r.stderr.toString());
 
-const allOrgsOutput = spawnSync('adx', ['salesforce:demo', , '-o', 'DEV,QA', '--json'], {
+let allOrgsOutput = spawnSync('adx', ['salesforce:demo', , '-o', 'DEV,QA', '--json'], {
   shell: true,
 });
 
-console.log(JSON.parse(allOrgsOutput.stdout.toString().split('\n')[1]));
 
-JSON.parse(allOrgsOutput.stdout.toString().split('\n')[1]).forEach((orgInfo) => {
-  console.log(`Alias: ${orgInfo.alias}`);
-  console.log(`Instance URL: ${orgInfo.instanceUrl}`);
-  console.log(`Username: ${orgInfo.username}`);
-  console.log(`Password: ${orgInfo.password}`);
-  console.log(`authURL: ${orgInfo.sfdxAuthUrl}`);
-
+allOrgsOutput = JSON.parse(allOrgsOutput.stdout.toString().split('\n')[1]).map((orgInfo) => {
+  return {
+    alias: orgInfo.alias,
+    instanceUrl: orgInfo.instanceUrl,
+    password: orgInfo.password,
+    username: orgInfo.username,
+    authURL: orgInfo.sfdxAuthUrl,
+  };
 });
 
+console.log(JSON.stringify(output, null, 2));
 
 spawnSync('sfdx', ['force:org:delete', , '-u', 'DEV-ADX-DEMO', '-p'], {
   shell: true,
