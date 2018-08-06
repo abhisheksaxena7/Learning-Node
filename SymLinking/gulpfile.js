@@ -6,7 +6,7 @@
 
 const gulp = require('gulp');
 const {
-    argv,
+  argv,
 } = require('yargs');
 const index = require('./index');
 
@@ -17,16 +17,16 @@ const nodePackage = argv.p;
 const arrayNode = [nodeDx, nodeAppirio, nodeSalesforce];
 
 gulp.task('symlink', () => {
-    index.npmLink(arrayNode);
+  index.npmLink(arrayNode);
 });
 
 // This task updates the 3 Node-repositories
 // and creates updated symlinks.
 gulp.task('update:symlink', () => {
-    index.updateRepos(arrayNode);
-    index.deleteExistingDirs(arrayNode);
-    index.installNodeModules(arrayNode);
-    index.linkNodes(nodeSalesforce, nodeDx);
+  index.updateRepos(arrayNode);
+  index.deleteExistingDirs(arrayNode);
+  index.installNodeModules(arrayNode);
+  index.linkNodes(nodeSalesforce, nodeDx);
 });
 
 gulp.task('create:symlink', ['symlink', 'update:symlink']);
@@ -35,18 +35,18 @@ gulp.task('create:symlink', ['symlink', 'update:symlink']);
 // a new version has been published for node-salesforce
 // or node-appirio
 gulp.task('publish:dx', () => {
-    index.unlinkDX(nodeDx);
-    index.deleteExistingDirs([nodeDx]);
-    index.installNodeModules([nodeDx]);
-    index.commitUpdatedDependency(nodeDx);
-    index.patchDX(nodeDx);
+  index.unlinkDX(nodeDx);
+  index.deleteExistingDirs([nodeDx]);
+  index.installNodeModules([nodeDx]);
+  index.commitUpdatedDependency(nodeDx);
+  index.patchDX(nodeDx);
 });
 
 gulp.task('sync', ['publish:dx', 'create:symlink']);
 
 gulp.task('refresh:package', () => {
-    index.unlinkDX(nodePackage);
-    index.deleteExistingDirs([nodePackage]);
-    index.installNodeModules([nodePackage]);
-    index.updateNodeModules(nodePackage);
+  index.unlinkDX(nodePackage);
+  index.deleteExistingDirs([nodePackage]);
+  index.installNodeModules([nodePackage]);
+  index.updateNodeModules(nodePackage);
 });
