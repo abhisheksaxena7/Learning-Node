@@ -23,7 +23,7 @@ allOrgsOutput = JSON.parse(allOrgsOutput.stdout.toString().split('\n')[1]).map((
   };
 });
 
-console.log(JSON.stringify(output, null, 2));
+console.log(JSON.stringify(allOrgsOutput, null, 2));
 
 spawnSync('sfdx', ['force:org:delete', , '-u', 'DEV-ADX-DEMO', '-p'], {
   shell: true,
