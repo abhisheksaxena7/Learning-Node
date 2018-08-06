@@ -13,17 +13,13 @@ let allOrgsOutput = spawnSync('adx', ['salesforce:demo', , '-o', 'DEV,QA', '--js
 });
 
 
-allOrgsOutput = JSON.parse(allOrgsOutput.stdout.toString().split('\n')[1]).map((orgInfo) => {
-  return {
-    alias: orgInfo.alias,
-    instanceUrl: orgInfo.instanceUrl,
-    password: orgInfo.password,
-    username: orgInfo.username,
-    authURL: orgInfo.sfdxAuthUrl,
-  };
+const temp = {};
+allOrgsOutput = JSON.parse(allOrgsOutput.stdout.toString().split('\n')[1]).forEach((orgInfo) => {
+  temp[`SF_ORG_${orgInfo.alias.replace('-ADX-DEMO', '')}__SERVERURL`] = orgInfo.instanceUrl;
+  temp[`SF_ORG_${orgInfo.alias.replace('-ADX-DEMO', '')}__USERNAME`] = orgInfo.username;
+  temp[`SF_ORG_${orgInfo.alias.replace('-ADX-DEMO', '')}__PASSWORD`] = orgInfo.password;
 });
-
-console.log(JSON.stringify(allOrgsOutput, null, 2));
+console.log(temp);
 
 spawnSync('sfdx', ['force:org:delete', , '-u', 'DEV-ADX-DEMO', '-p'], {
   shell: true,
