@@ -6,6 +6,12 @@
     "configurations": [{
             "type": "node",
             "request": "launch",
+            "name": "SalesforceCore",
+            "program": "${workspaceFolder}/sfdx-node/salesforcecore.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "sfdx",
             "program": "${workspaceFolder}/sfdx-node/salesforcedx.js"
         },
