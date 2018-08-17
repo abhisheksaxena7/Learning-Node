@@ -1,0 +1,17 @@
+const reverseString = require('../reversestring');
+
+test('reverseString function exists', () => {
+  expect(reverseString).toBeDefined();
+});
+
+test('reverseString function exists', () => {
+  expect(typeof reverseString).toEqual('function');
+});
+
+test('String reverses', () => {
+  expect(reverseString('hello')).toEqual('olleh');
+});
+
+test('String reverses with uppercase', () => {
+  expect(reverseString('Hello')).toEqual('olleh');
+});
