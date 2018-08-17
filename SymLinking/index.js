@@ -55,6 +55,16 @@ const installNodeModules = (arrayNode) => {
   });
 };
 
+const installYarnModules = (arrayNode) => {
+  arrayNode.forEach((node) => {
+    spawnSync('npm', ['install'], {
+      shell: true,
+      stdio: 'inherit',
+      cwd: node,
+    });
+  });
+};
+
 const linkNodes = (nodeSalesforce, nodeDx) => {
   spawnSync('npm', ['link', '@appirio/appirio'], {
     shell: true,
@@ -114,6 +124,7 @@ module.exports = {
   updateRepos,
   deleteExistingDirs,
   installNodeModules,
+  installYarnModules,
   linkNodes,
   unlinkDX,
   patchDX,
