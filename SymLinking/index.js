@@ -21,6 +21,13 @@ const updateRepos = (arrayNode) => {
       stdio: 'inherit',
       cwd: node,
     });
+    // If there are changes in package-lock.json, reset them for now
+    // so that working directory is clean.
+    spawnSync('git', ['checkout', 'package-lock.json'], {
+      shell: true,
+      stdio: 'inherit',
+      cwd: node,
+    });
     spawnSync('git', ['pull', 'origin', 'master'], {
       shell: true,
       stdio: 'inherit',
