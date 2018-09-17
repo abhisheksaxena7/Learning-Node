@@ -12,10 +12,12 @@ const project = () => SfdxProject.resolve('/Users/appirio-13524/Documents/work-r
 project()
   .then(result => result.retrieveSfdxProjectJson())
   .then(result => {
-    const myPluginProperties = result.get('plugins') || {};
-    myPluginProperties.schema.description = 'changed desc';
-    result.set('plugins', myPluginProperties);
-    //result.write();
-    console.log(myPluginProperties);
+    const allPluginProperties = result.get('plugins') || {};
+    const appirioDX = allPluginProperties.appiriodx;
+    appirioDX.schema.description = 'changed desc';
+    allPluginProperties.appiriodx = appirioDX;
+    result.set('plugins', allPluginProperties);
+    result.write();
+    console.log(allPluginProperties);
   });
 //console.log(`pluginValue: ${project}`);
