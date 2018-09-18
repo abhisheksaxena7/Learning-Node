@@ -25,7 +25,6 @@ gulp.task('symlink', () => {
 gulp.task('update:symlink', () => {
   index.updateRepos(arrayNode);
   index.deleteExistingDirs(arrayNode);
-  index.installNodeModules(arrayNode);
   index.installYarnModules(arrayNode);
   index.linkNodes(nodeSalesforce, nodeDx);
 });
@@ -38,7 +37,6 @@ gulp.task('create:symlink', ['symlink', 'update:symlink']);
 gulp.task('publish:dx', () => {
   index.unlinkDX(nodeDx);
   index.deleteExistingDirs([nodeDx]);
-  index.installNodeModules([nodeDx]);
   index.installYarnModules([nodeDx]);
   index.commitUpdatedDependency(nodeDx);
   index.patchDX(nodeDx);
@@ -49,7 +47,6 @@ gulp.task('sync', ['publish:dx', 'create:symlink']);
 gulp.task('refresh:package', () => {
   index.unlinkDX(nodePackage);
   index.deleteExistingDirs([nodePackage]);
-  index.installNodeModules([nodePackage]);
   index.installYarnModules([nodePackage]);
-  index.updateNodeModules(nodePackage);
+  index.updateYarnModules(nodePackage);
 });

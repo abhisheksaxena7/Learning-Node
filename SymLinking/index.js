@@ -4,9 +4,9 @@ const {
   spawnSync,
 } = require('child_process');
 
-const npmLink = (arrayNode) => {
+const yarnLink = (arrayNode) => {
   arrayNode.forEach((node) => {
-    spawnSync('npm', ['link'], {
+    spawnSync('yarn', ['link'], {
       shell: true,
       stdio: 'inherit',
       cwd: node,
@@ -23,11 +23,6 @@ const updateRepos = (arrayNode) => {
     });
     // If there are changes in package-lock.json, reset them for now
     // so that working directory is clean.
-    spawnSync('git', ['checkout', 'package-lock.json'], {
-      shell: true,
-      stdio: 'inherit',
-      cwd: node,
-    });
     spawnSync('git', ['pull', 'origin', 'master'], {
       shell: true,
       stdio: 'inherit',
@@ -38,26 +33,14 @@ const updateRepos = (arrayNode) => {
 
 const deleteExistingDirs = (arrayNode) => {
   arrayNode.forEach((node) => {
-    const pathToPackageLock = path.join(node, 'package-lock.json');
     const pathToNodeModules = path.join(node, 'node_modules');
-    fs.removeSync(pathToPackageLock);
     fs.removeSync(pathToNodeModules);
-  });
-};
-
-const installNodeModules = (arrayNode) => {
-  arrayNode.forEach((node) => {
-    spawnSync('npm', ['install'], {
-      shell: true,
-      stdio: 'inherit',
-      cwd: node,
-    });
   });
 };
 
 const installYarnModules = (arrayNode) => {
   arrayNode.forEach((node) => {
-    spawnSync('npm', ['install'], {
+    spawnSync('yarn', ['install'], {
       shell: true,
       stdio: 'inherit',
       cwd: node,
@@ -66,30 +49,30 @@ const installYarnModules = (arrayNode) => {
 };
 
 const linkNodes = (nodeSalesforce, nodeDx) => {
-  spawnSync('npm', ['link', '@appirio/appirio'], {
+  spawnSync('yarn', ['link', '@appirio/appirio'], {
     shell: true,
     stdio: 'inherit',
     cwd: nodeSalesforce,
   });
-  spawnSync('npm', ['link', '@appirio/appirio'], {
+  spawnSync('yarn', ['link', '@appirio/appirio'], {
     shell: true,
     stdio: 'inherit',
     cwd: nodeDx,
   });
-  spawnSync('npm', ['link', '@appirio/salesforce'], {
+  spawnSync('yarn', ['link', '@appirio/salesforce'], {
     shell: true,
     stdio: 'inherit',
     cwd: nodeDx,
   });
 };
 
-const unlinkDX = nodeDx => spawnSync('npm', ['unlink'], {
+const unlinkDX = nodeDx => spawnSync('yarn', ['unlink'], {
   shell: true,
   stdio: 'inherit',
   cwd: nodeDx,
 });
 
-const updateNodeModules = nodeDx => spawnSync('npm', ['update'], {
+const updateYarnModules = nodeDx => spawnSync('yarn', ['update'], {
   shell: true,
   stdio: 'inherit',
   cwd: nodeDx,
@@ -120,14 +103,13 @@ const patchDX = nodeDx => spawnSync('npm', ['version', 'patch'], {
 });
 
 module.exports = {
-  npmLink,
+  yarnLink,
   updateRepos,
   deleteExistingDirs,
-  installNodeModules,
   installYarnModules,
   linkNodes,
   unlinkDX,
   patchDX,
   commitUpdatedDependency,
-  updateNodeModules,
+  updateYarnModules,
 };
