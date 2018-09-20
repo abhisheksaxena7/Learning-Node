@@ -6,18 +6,28 @@
 
 const {
   SfdxProject,
+  SfdxProjectJson
 } = require('@salesforce/core');
 
-const project = () => SfdxProject.resolve('/Users/appirio-13524/Documents/work-repos/dreamhouse-2gp');
+const project = () => SfdxProject.resolve();
 project()
   .then(result => result.retrieveSfdxProjectJson())
   .then(result => {
     const allPluginProperties = result.get('plugins') || {};
-    const appirioDX = allPluginProperties.appiriodx;
+    const appirioDX = allPluginProperties.appiriodx.packages;
     appirioDX.schema.description = 'changed desc';
     allPluginProperties.appiriodx = appirioDX;
     result.set('plugins', allPluginProperties);
     result.write();
     console.log(allPluginProperties);
   });
-//console.log(`pluginValue: ${project}`);
+
+
+const configFile = async () => {
+  const project = await SfdxProjectJson.retrieve();
+  project.get('plugins');
+  console.log(project);
+};
+
+project();
+configFile();

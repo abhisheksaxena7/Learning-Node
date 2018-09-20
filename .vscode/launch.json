@@ -14,8 +14,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "sfdx",
-            "program": "${workspaceFolder}/sfdx-node/salesforcedx.js"
+            "name": "sfdxcore",
+            "program": "${workspaceFolder}/sfdx-node/salesforcecore.js"
         },
         {
             "type": "node",

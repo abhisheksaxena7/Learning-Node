@@ -1,0 +1,119 @@
+{
+    "namespace": "",
+    "packageDirectories": [
+        {
+            "path": "force-app/schema",
+            "package": "schema",
+            "versionName": "ver 0.1",
+            "versionNumber": "0.1.0.NEXT",
+            "default": true,
+            "definitionFile": "config/project-scratch-def.json"
+        },
+        {
+            "path": "force-app/bl",
+            "package": "bl",
+            "versionName": "ver 0.1",
+            "versionNumber": "0.1.0.NEXT",
+            "default": false,
+            "dependencies": [
+                {
+                    "package": "schema",
+                    "versionNumber": "0.1.0.LATEST"
+                }
+            ]
+        },
+        {
+            "path": "force-app/ui",
+            "package": "ui",
+            "versionName": "ver 0.1",
+            "versionNumber": "0.1.0.NEXT",
+            "default": false,
+            "dependencies": [
+                {
+                    "package": "schema",
+                    "versionNumber": "0.1.0.LATEST"
+                },
+                {
+                    "package": "bl",
+                    "versionNumber": "0.1.0.LATEST"
+                }
+            ]
+        },
+        {
+            "path": "force-app/perms",
+            "package": "perms",
+            "versionName": "ver 0.1",
+            "versionNumber": "0.1.0.NEXT",
+            "default": false,
+            "dependencies": [
+                {
+                    "package": "schema",
+                    "versionNumber": "0.1.0.LATEST"
+                },
+                {
+                    "package": "bl",
+                    "versionNumber": "0.1.0.LATEST"
+                },
+                {
+                    "package": "ui",
+                    "versionNumber": "0.1.0.LATEST"
+                }
+            ]
+        },
+        {
+            "path": "force-app/ui",
+            "package": "newPkg45",
+            "versionName": "ver 0.1",
+            "versionNumber": "0.1.0.NEXT",
+            "default": false
+        }
+    ],
+    "plugins": {
+        "appiriodx": {
+            "newPkg38": {
+                "packageType": "Unlocked",
+                "description": "Schema package dreamhouse",
+                "path": "force-app/perms"
+            },
+            "schema": {
+                "packageType": "Unlocked",
+                "description": "changed desc"
+            },
+            "newPkg39": {
+                "packageType": "Unlocked",
+                "description": "Schema package dreamhouse",
+                "path": "force-app/perms"
+            },
+            "bl": {
+                "packageType": "Unlocked",
+                "description": "Business Logic package dreamhouse"
+            },
+            "ui": {
+                "packageType": "Unlocked",
+                "description": "User Interface package dreamhouse"
+            },
+            "newPkg45": {
+                "packageType": "Unlocked",
+                "description": "Schema package dreamhouse",
+                "path": "force-app/ui"
+            },
+            "perms": {
+                "packageType": "Unlocked",
+                "description": "Permissions package dreamhouse"
+            }
+        }
+    },
+    "sfdcLoginUrl": "https://login.salesforce.com",
+    "sourceApiVersion": "42.0",
+    "packageAliases": {
+        "schema": "0Ho6F000000XZIpSAO",
+        "bl": "0Ho6F000000XZIuSAO",
+        "ui": "0Ho6F000000XZIzSAO",
+        "perms": "0Ho6F000000XZJ4SAO",
+        "schema@0.1.0-1": "04t6F000002laTsQAI",
+        "bl@0.1.0-1": "04t6F000002laU2QAI",
+        "ui@0.1.0-1": "04t6F000002laovQAA",
+        "perms@0.1.0-1": "04t6F000002lb9jQAA",
+        "newPkg45": "0Ho6F000000XZMrSAO"
+    }
+}
