@@ -17,7 +17,7 @@ const nodePackage = argv.p;
 const arrayNode = [nodeDx, nodeAppirio, nodeSalesforce];
 
 gulp.task('symlink', () => {
-  index.npmLink(arrayNode);
+  index.yarnLink(arrayNode);
 });
 
 // This task updates the 3 Node-repositories
