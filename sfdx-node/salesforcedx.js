@@ -36,5 +36,5 @@ const installPackage = (package, targetusername) => sfdxApi.package.install({
     json: false,
 });
 
-installPackage('04t50000000gfUZAAY', 'testEstimator');
+installPackage('04t6F000003UHtwQAG', 'DreamHT');
 module.exports = sfdxApi;

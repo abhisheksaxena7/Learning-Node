@@ -59,48 +59,49 @@
                     "versionNumber": "0.1.0.LATEST"
                 }
             ]
-        },
-        {
-            "path": "force-app/ui",
-            "package": "newPkg45",
-            "versionName": "ver 0.1",
-            "versionNumber": "0.1.0.NEXT",
-            "default": false
         }
     ],
     "plugins": {
         "appiriodx": {
-            "newPkg38": {
-                "packageType": "Unlocked",
-                "description": "Schema package dreamhouse",
-                "path": "force-app/perms"
+            "packages": {
+                "newPkg57": {
+                    "packageType": "Unlocked",
+                    "description": "Schema package dreamhouse",
+                    "path": "force-app/perms"
+                },
+                "schema": {
+                    "packageType": "Unlocked",
+                    "description": "changed desc"
+                },
+                "newPkg58": {
+                    "packageType": "Unlocked",
+                    "description": "Schema package dreamhouse",
+                    "path": "force-app/perms"
+                },
+                "bl": {
+                    "packageType": "Unlocked",
+                    "description": "Business Logic package dreamhouse"
+                },
+                "ui": {
+                    "packageType": "Unlocked",
+                    "description": "User Interface package dreamhouse"
+                },
+                "newPkg59": {
+                    "packageType": "Unlocked",
+                    "description": "Schema package dreamhouse",
+                    "path": "force-app/ui"
+                },
+                "perms": {
+                    "packageType": "Unlocked",
+                    "description": "Permissions package dreamhouse"
+                }
             },
-            "schema": {
-                "packageType": "Unlocked",
-                "description": "changed desc"
-            },
-            "newPkg39": {
-                "packageType": "Unlocked",
-                "description": "Schema package dreamhouse",
-                "path": "force-app/perms"
-            },
-            "bl": {
-                "packageType": "Unlocked",
-                "description": "Business Logic package dreamhouse"
-            },
-            "ui": {
-                "packageType": "Unlocked",
-                "description": "User Interface package dreamhouse"
-            },
-            "newPkg45": {
-                "packageType": "Unlocked",
-                "description": "Schema package dreamhouse",
-                "path": "force-app/ui"
-            },
-            "perms": {
-                "packageType": "Unlocked",
-                "description": "Permissions package dreamhouse"
-            }
+            "permissionSets": [
+                "Case_Feed",
+                "ps1",
+                "ps2"
+            ],
+            "sampleData": []
         }
     },
     "sfdcLoginUrl": "https://login.salesforce.com",
@@ -113,7 +114,6 @@
         "schema@0.1.0-1": "04t6F000002laTsQAI",
         "bl@0.1.0-1": "04t6F000002laU2QAI",
         "ui@0.1.0-1": "04t6F000002laovQAA",
-        "perms@0.1.0-1": "04t6F000002lb9jQAA",
-        "newPkg45": "0Ho6F000000XZMrSAO"
+        "perms@0.1.0-1": "04t6F000002lb9jQAA"
     }
 }

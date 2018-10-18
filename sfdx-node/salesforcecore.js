@@ -16,18 +16,23 @@ project()
     const allPluginProperties = result.get('plugins') || {};
     const appirioDX = allPluginProperties.appiriodx.packages;
     appirioDX.schema.description = 'changed desc';
-    allPluginProperties.appiriodx = appirioDX;
+    allPluginProperties.appiriodx.packages = appirioDX;
     result.set('plugins', allPluginProperties);
     result.write();
-    console.log(allPluginProperties);
+    // console.log(allPluginProperties);
   });
 
 
 const configFile = async () => {
   const project = await SfdxProjectJson.retrieve();
-  project.get('plugins');
-  console.log(project);
+  // console.log(project.get('plugins'));
+  // project.awaitEach((key, value) => {
+  //   console.log('key:     ' + key);
+  //   console.log('value:   ' + value);
+  // })
+  const packageDir = project.get('packageDirectories');
+
+  console.log(packageDir.some(obj => obj.path === 'force-app/bl'));
 };
 
-project();
 configFile();
