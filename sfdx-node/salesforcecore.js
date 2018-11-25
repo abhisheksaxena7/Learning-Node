@@ -5,9 +5,22 @@
 // } = require('@salesforce/command').core;
 
 const {
+  Org,
   SfdxProject,
   SfdxProjectJson
 } = require('@salesforce/core');
+
+const test = async () => {
+  try {
+    const orgObj = await Org.create('DEVHUB');
+    console.log(orgObj.getUsername());
+
+    return orgObj;
+  } catch (e) {
+    // Do nothing
+  }
+};
+// test();
 
 const project = () => SfdxProject.resolve();
 project()
