@@ -14,7 +14,7 @@ let allOrgsOutput = spawnSync('adx', ['salesforce:demo', , '-o', 'DEV,QA', '--js
 
 
 const temp = {};
-allOrgsOutput = JSON.parse(allOrgsOutput.stdout.toString().split('\n')[1]).forEach((orgInfo) => {
+allOrgsOutput = JSON.parse(allOrgsOutput.stdout.toString().match(/\[{.*}\]/g)).forEach((orgInfo) => {
   temp[`SF_ORG_${orgInfo.alias.replace('-ADX-DEMO', '')}__SERVERURL`] = orgInfo.instanceUrl;
   temp[`SF_ORG_${orgInfo.alias.replace('-ADX-DEMO', '')}__USERNAME`] = orgInfo.username;
   temp[`SF_ORG_${orgInfo.alias.replace('-ADX-DEMO', '')}__PASSWORD`] = orgInfo.password;
